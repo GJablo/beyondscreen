@@ -1,12 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const {
-  createGoal,
-  getUserGoals,
-  addProgressToGoal,
-  deleteGoal
-} = require('../controllers/goalController');
-const { protect } = require('../middleware/auth'); // Ensure middleware path is correct
+const { createGoal, getUserGoals, addProgressToGoal, deleteGoal } = require('../controllers/goalController');
+
+// Import the auth middleware
+const { protect } = require('../middleware/auth');
 
 // All routes below are protected
 router.use(protect);
@@ -27,4 +24,5 @@ router.post('/:goalId/progress', addProgressToGoal);
 // @desc    Delete a goal
 router.delete('/:goalId', deleteGoal);
 
+// Export the router
 module.exports = router;
