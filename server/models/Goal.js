@@ -49,8 +49,5 @@ const goalSchema = new mongoose.Schema({
   },
 });
 
-// Pre-save hook to update streak count
-
-
 // Export the goal model
 module.exports = mongoose.model("Goal", goalSchema);
