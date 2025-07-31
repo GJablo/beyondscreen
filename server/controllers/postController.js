@@ -1,3 +1,4 @@
+// Post controller
 const Post = require("../models/Post");
 
 // @desc    Create a new post
