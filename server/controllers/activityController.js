@@ -98,7 +98,7 @@ exports.deleteActivity = async (req, res) => {
       return res.status(403).json({ message: 'You are not authorized to delete this activity' });
     }
 
-    await activity.remove();
+    await activity.deleteOne();
     res.status(200).json({ message: 'Activity deleted' });
   } catch (error) {
     console.error(error);
