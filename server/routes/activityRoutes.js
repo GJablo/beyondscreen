@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createActivity, getAllActivities, getActivityById, updateActivity, deleteActivity } = require('../controllers/activityController'); // Importing the functions from the controller
+const { createActivity, getAllActivities, getActivityById, updateActivity, deleteActivity, getMyActivities, joinActivity } = require('../controllers/activityController'); // Importing the functions from the controller
 
 const { protect } = require('../middleware/auth'); // middleware to protect routes
 
@@ -12,6 +12,10 @@ router.get('/:id', getActivityById);
 router.post('/', protect, createActivity);
 router.put('/:id', protect, updateActivity);
 router.delete('/:id', protect, deleteActivity);
+
+// New routes
+router.get('/me/activities', protect, getMyActivities);
+router.post('/:id/join', protect, joinActivity);
 
 // Exporting the router
 module.exports = router;

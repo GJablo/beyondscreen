@@ -18,15 +18,22 @@ exports.createActivity = async (req, res) => {
   }
 };
 
-// @desc    Get all activities
 // @route   GET /api/activities
 // @access  Public
+// @desc Get all activities with filtering and search
 exports.getAllActivities = async (req, res) => {
   try {
-    const activities = await Activity.find().populate('user', 'username email');
+    const { category, difficulty, search } = req.query;
+
+    const query = {};
+
+    if (category) query.category = category;
+    if (difficulty) query.difficulty = difficulty;
+    if (search) query.name = { $regex: search, $options: 'i' };
+
+    const activities = await Activity.find(query).populate('user', 'username email');
     res.status(200).json(activities);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Failed to fetch activities' });
   }
 };
@@ -96,5 +103,34 @@ exports.deleteActivity = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to delete activity' });
+  }
+};
+
+// Get activities created by logged-in user
+exports.getMyActivities = async (req, res) => {
+  try {
+    const activities = await Activity.find({ user: req.user.id });
+    res.status(200).json(activities);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch your activities' });
+  }
+};
+
+// Join an activity
+exports.joinActivity = async (req, res) => {
+  try {
+    const activity = await Activity.findById(req.params.id);
+    if (!activity) return res.status(404).json({ message: 'Activity not found' });
+
+    const alreadyJoined = activity.participants.includes(req.user.id);
+    if (alreadyJoined)
+      return res.status(400).json({ message: 'You have already joined this activity' });
+
+    activity.participants.push(req.user.id);
+    await activity.save();
+
+    res.status(200).json({ message: 'Joined successfully', participants: activity.participants });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to join activity' });
   }
 };
