@@ -35,20 +35,28 @@ exports.getAllPosts = async (req, res) => {
   }
 };
 
-// @desc    Like a post
-// @route   PUT /api/posts/:id/like
+// @desc    Like / Unlike a post
+// @route   PATCH /api/posts/:id/like
 // @access  Private
-exports.likePost = async (req, res) => {
+exports.toggleLikePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
-    if (!post.likes.includes(req.user._id)) {
-      post.likes.push(req.user._id);
-      await post.save();
-    }
+    const userId = req.user._id;
+    const alreadyLiked = post.likes.includes(userId);
 
-    res.status(200).json({ message: "Post liked", likes: post.likes });
+    if (alreadyLiked) {
+      // Unlike
+      post.likes = post.likes.filter((id) => id.toString() !== userId.toString());
+      await post.save();
+      return res.status(200).json({ message: "Post unliked", likes: post.likes });
+    } else {
+      // Like
+      post.likes.push(userId);
+      await post.save();
+      return res.status(200).json({ message: "Post liked", likes: post.likes });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
