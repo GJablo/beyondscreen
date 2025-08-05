@@ -1,6 +1,6 @@
 
 import { Link, Outlet } from "react-router-dom";
-import Navbar from "../components/components/Navbar";
+import Navbar from "../components/Navbar";
 
 const SidebarLink = ({ to, label, icon: Icon }) => (
   <Link
@@ -23,9 +23,9 @@ export default function DashboardLayout() {
         <h2 className="text-2xl font-bold text-left mb-4">BeyondScreen</h2>
 
         <nav className="space-y-2">
+          <SidebarLink to="/dashboard/activities" label="Activities" />
           <SidebarLink to="/dashboard/goals" label="Goals" />
           <SidebarLink to="/dashboard/posts" label="Posts" />
-          <SidebarLink to="/dashboard/activities" label="Activities" />
           <SidebarLink to="/dashboard/profile" label="Update Profile" />
         </nav>
       </aside>

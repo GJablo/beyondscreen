@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input } from "../components/components/ui/input";
-import { Button } from "../components/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../components/components/ui/card";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../components/ui/card";
 import API from "../services/api";
 import { Link } from "react-router-dom";
 import { toast } from 'sonner';
