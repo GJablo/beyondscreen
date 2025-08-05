@@ -32,7 +32,7 @@ export default function Signup() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold">Sign Up</CardTitle>
+          <CardTitle className="text-center text-2xl font-bold">Create an Account</CardTitle>
         </CardHeader>
         <CardContent>
           <Input
