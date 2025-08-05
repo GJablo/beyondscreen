@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Input } from "../components/components/ui/input";
 import { Button } from "../components/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../components/components/ui/card";
@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -20,7 +20,7 @@ export default function Login() {
       const response = await API.post("/users/login", { email, password });
       localStorage.setItem("token", response.data.token);
       toast('Logged in successfully!');
-      // navigate("/dashboard");
+      navigate("/dashboard");
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
     } finally {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Input } from "../components/components/ui/input";
 import { Button } from "../components/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../components/components/ui/card";
@@ -11,7 +11,7 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
- // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleSignup = async () => {
     if (!email || !password) return alert("Please fill in all fields");
@@ -20,7 +20,7 @@ export default function Signup() {
       const res = await API.post("/users/register", { email, password });
       localStorage.setItem("token", res.data.token);
       toast('User created successfully!');
-  //    navigate("/dashboard");
+      navigate("/dashboard");
     } catch (error) {
       alert(error.res?.data?.message || "Signup failed");
     } finally {
