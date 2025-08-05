@@ -1,6 +1,6 @@
 // pages/Home.jsx
-import HomeNavbar from "../components/components/HomeNavbar";
-import { Button } from "../components/components/ui/button";
+import HomeNavbar from "../components/HomeNavbar";
+import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
 
 const Home = () => {
