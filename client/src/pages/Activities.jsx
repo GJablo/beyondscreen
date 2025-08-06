@@ -64,6 +64,7 @@ export default function Activities() {
 
   return (
     <>
+    <div className="min-h-screen flex flex-col md:flex-row">
     <Sidebar />
 
       {/* Main content area */}
@@ -150,6 +151,7 @@ export default function Activities() {
           </DialogContent>
         </Dialog>
       </main>
+      </div>
     </>
   );
 }
