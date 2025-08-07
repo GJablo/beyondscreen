@@ -1,25 +1,44 @@
 // Post controller
 const Post = require("../models/Post");
+const multer = require('multer');
+const path = require('path');
 
 // @desc    Create a new post
 // @route   POST /api/posts
 // @access  Private
-exports.createPost = async (req, res) => {
-  try {
-    const { content, imageUrl } = req.body;
-
-    const post = new Post({
-      user: req.user._id,
-      content,
-      imageUrl,
-    });
-
-    const saved = await post.save();
-    res.status(201).json(saved);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+// Configure storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
-};
+});
+
+const upload = multer({ storage });
+
+// Modify createPost to handle file uploads
+exports.createPost = [
+  upload.single('image'),
+  async (req, res) => {
+    try {
+      const { content } = req.body;
+      const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+
+      const post = new Post({
+        user: req.user._id,
+        content,
+        imageUrl,
+      });
+
+      const saved = await post.save();
+      res.status(201).json(saved);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+];
 
 // @desc    Get all posts (community feed)
 // @route   GET /api/posts
