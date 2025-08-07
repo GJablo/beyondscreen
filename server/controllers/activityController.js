@@ -116,6 +116,17 @@ exports.getMyActivities = async (req, res) => {
   }
 };
 
+// Get activities joined by logged-in user
+exports.getJoinedActivities = async (req, res) => {
+  try {
+    // Find activities where the participants array contains the user's ID
+    const activities = await Activity.find({ participants: req.user.id });
+    res.status(200).json(activities);
+  } catch (error){
+    res.status(500).json({ message: 'Failed to fetch your joined activities' });
+}
+};
+
 // Join an activity
 exports.joinActivity = async (req, res) => {
   try {
