@@ -19,6 +19,7 @@ export default function Signup() {
     try {
       const res = await API.post("/users/register", { email, password });
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
       toast('User created successfully!');
       navigate("/dashboard");
     } catch (error) {
