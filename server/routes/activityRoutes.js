@@ -16,7 +16,7 @@ router.delete('/:id', protect, deleteActivity);
 // New routes
 router.get('/me/activities', protect, getMyActivities);
 router.post('/:id/join', protect, joinActivity);
-router.get('/joined', protect, getJoinedActivities);
+router.get('/me/joined', protect, getJoinedActivities);
 
 // Exporting the router
 module.exports = router;
