@@ -62,21 +62,54 @@ exports.getMe = async (req, res) => {
   res.status(200).json({ _id: user._id, email: user.email });
 };
 
+// @route   POST /users/update-password
 // @desc    Update user password
+// @access  Private
 exports.updatePassword = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('+password');
     const { currentPassword, newPassword } = req.body;
 
-    const isMatch = await bcrypt.compare(currentPassword, user.password);
-    if (!isMatch)
-      return res.status(400).json({ message: 'Current password is incorrect' });
+    // Validate input
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Both current and new password are required' });
+    }
 
+    if (currentPassword === newPassword) {
+      return res.status(400).json({ message: 'New password must be different from current password' });
+    }
+
+    const user = await User.findById(req.user.id).select('+password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    // Validate new password strength
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters' });
+    }
+
+    if (!/^[a-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/.test(newPassword)) {
+      return res.status(400).json({
+        message: 'Password can only contain lowercase letters, numbers, and special characters'
+      });
+    }
+
+    // Update password
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
 
     res.status(200).json({ message: 'Password updated successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Password update error:', error);
+    res.status(500).json({
+      message: 'An error occurred while updating password',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
