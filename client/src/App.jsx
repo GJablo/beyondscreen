@@ -5,6 +5,7 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Activities from "./pages/Activities";
 import UpdateProfile from "./pages/UpdateProfile";
+import PostsPage from "./pages/Posts";
 import ProtectedRoute from './utils/ProtectedRoutes';
 import { Toaster } from "sonner";
 
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/dashboard/activities" element={<ProtectedRoute><Activities /></ProtectedRoute>} />
         <Route path="/dashboard/profile" element={<ProtectedRoute><UpdateProfile /></ProtectedRoute>} />
+        <Route path="/dashboard/posts" element={<ProtectedRoute><PostsPage /></ProtectedRoute>} />
       </Routes>
     </Router>
   );
