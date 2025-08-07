@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Skeleton } from "../components/ui/skeleton";
+import { toast } from "sonner";
 
 const SidebarLink = ({ to, label, icon: Icon }) => (
   <Link
@@ -20,7 +21,8 @@ export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [joinedActivities, setJoinedActivities] = useState([]);
+  const [joinedActivityIds, setJoinedActivityIds] = useState([]);
+  const [error, setError] = useState(null);
 
   const fetchActivities = async () => {
     try {
@@ -28,6 +30,20 @@ export default function DashboardLayout() {
       setActivities(data);
     } catch (error) {
       console.error("Failed to fetch activities", error);
+      setError("Failed to load activities");
+      toast.error("Failed to load activities");
+    }
+  };
+
+  const fetchJoinedActivities = async () => {
+    try {
+      const { data } = await API.get("/activities/me/joined");
+      // Extract just the IDs of joined activities
+      setJoinedActivityIds(data.map(activity => activity._id));
+    } catch (error) {
+      console.error("Failed to fetch joined activities", error);
+      toast.error("Failed to load your joined activities");
+      // Continue even if this fails - user can still see activities
     } finally {
       setLoading(false);
     }
@@ -36,15 +52,45 @@ export default function DashboardLayout() {
   const handleJoin = async (activityId) => {
     try {
       await API.post(`/activities/${activityId}/join`);
-      setJoinedActivities((prev) => [...prev, activityId]);
+      // Add the newly joined activity ID to our state
+      setJoinedActivityIds(prev => [...prev, activityId]);
+      toast.success("Successfully joined activity!");
     } catch (error) {
       console.error("Failed to join activity", error);
+      toast.error(error.response?.data?.message || "Failed to join activity");
     }
   };
 
   useEffect(() => {
-    fetchActivities();
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          fetchActivities(),
+          fetchJoinedActivities()
+        ]);
+      } catch (error) {
+        setError("Failed to load data");
+      }
+    };
+    loadData();
   }, []);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center p-6 bg-white dark:bg-zinc-900 rounded-lg shadow-lg">
+          <h2 className="text-xl font-bold mb-2">Error Loading Data</h2>
+          <p className="mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -83,7 +129,7 @@ export default function DashboardLayout() {
                 <Skeleton key={i} className="h-40 w-full rounded-lg" />
               ))
             : activities.map((activity) => {
-                const isJoined = joinedActivities.includes(activity._id);
+                const isJoined = joinedActivityIds.includes(activity._id);
 
                 return (
                   <Card key={activity._id}>
