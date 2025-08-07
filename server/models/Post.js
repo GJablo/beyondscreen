@@ -23,6 +23,7 @@ const postSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  // Add timestamps to comments in your Post model
   comments: [
     {
       user: {
@@ -38,6 +39,10 @@ const postSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
       },
+      updatedAt: {
+        type: Date,
+        default: Date.now,
+      }
     },
   ],
   createdAt: {

@@ -6,6 +6,7 @@ import API from '../services/api';
 export default function PostForm({ onPostCreated, initialData = null }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(initialData?.imageUrl || '');
+  const [imageFile, setImageFile] = useState(null);
   const {
     register,
     handleSubmit,
@@ -15,37 +16,51 @@ export default function PostForm({ onPostCreated, initialData = null }) {
     defaultValues: initialData || { content: '' }
   });
 
-  const onSubmit = async (data) => {
-    setIsSubmitting(true);
-    try {
-      let response;
-      if (initialData) {
-        response = await API.put(`/posts/${initialData._id}`, data);
-        toast.success('Post updated successfully!');
-      } else {
-        response = await API.post('/posts', data);
-        toast.success('Post created successfully!');
-        reset();
-        setImagePreview('');
-      }
-      if (onPostCreated) onPostCreated(response.data);
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to save post');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+const onSubmit = async (data) => {
+  setIsSubmitting(true);
+  try {
+    const formData = new FormData();
+    formData.append('content', data.content);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+    // Append the file directly if it exists
+    if (imageFile) {
+      formData.append('image', imageFile); // Use the stored file object
     }
-  };
+
+    let response;
+    if (initialData) {
+      response = await API.put(`/posts/${initialData._id}`, formData);
+    } else {
+      response = await API.post('/posts', formData);
+    }
+
+    reset();
+    setImagePreview('');
+    setImageFile(null);
+    toast.success(initialData ? 'Post updated successfully' : 'Post saved successfully');
+    if (onPostCreated) onPostCreated(response.data);
+  } catch (error) {
+    console.error('Post submission error:', error);
+    const errorMessage = error.response?.data?.message ||
+                       error.response?.data?.error ||
+                       'Failed to save post. Please try again.';
+    toast.error(errorMessage);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setImageFile(file); // Store the actual file object
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">

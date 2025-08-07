@@ -4,10 +4,17 @@ const API = axios.create({
   baseURL: 'http://localhost:5000/api',
 });
 
-API.interceptors.request.use(cfg => {
+API.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
-  if (token) cfg.headers.Authorization = `Bearer ${token}`;
-  return cfg;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+
+  return config;
 });
 
 export default API;

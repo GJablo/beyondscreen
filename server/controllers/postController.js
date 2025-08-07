@@ -1,11 +1,7 @@
 // Post controller
 const Post = require("../models/Post");
 const multer = require('multer');
-const path = require('path');
 
-// @desc    Create a new post
-// @route   POST /api/posts
-// @access  Private
 // Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -16,7 +12,26 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+// Configure file filter
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'), false);
+  }
+};
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
+
+// @desc    Create a new post
+// @route   POST /api/posts
+// @access  Private
 
 // Modify createPost to handle file uploads
 exports.createPost = [
@@ -46,7 +61,8 @@ exports.createPost = [
 exports.getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find()
-      .populate("user", "name email")
+      .populate("user", "name email avatar")
+      .populate("comments.user", "name avatar")
       .sort({ createdAt: -1 });
     res.status(200).json(posts);
   } catch (error) {
