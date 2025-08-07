@@ -33,7 +33,7 @@ export default function PostsPage() {
     try {
       await API.delete(`/posts/${postId}`);
       setPosts(posts.filter(post => post._id !== postId));
-      toast.success('Post deleted successfully');
+      toast('Post deleted successfully');
     } catch (error) {
       toast.error('Failed to delete post');
     }
